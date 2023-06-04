@@ -19,7 +19,9 @@ echo "#########        Let us build the package "$(basename `pwd`)
 echo "#############################################################################################"
 tput sgr0
 
-makepkg --sign
+updpkgsums
+
+makepkg -s --sign
 
 echo "Moving created files to " $destiny
 echo "#############################################################################################"
@@ -35,7 +37,7 @@ rm -rf pkg src
 echo "deleting unnecessary files"
 echo "#############################################################################################"
 
-rm -r calamares-*
+rm -rf calamares
 
 tput setaf 8
 echo "#############################################################################################"
