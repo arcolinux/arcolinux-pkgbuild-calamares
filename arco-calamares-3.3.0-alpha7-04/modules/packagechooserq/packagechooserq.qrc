@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>BIOS.qml</file>
+        <file>UEFI.qml</file>
+        <file>packagechooserq.qml</file>
+    </qresource>
+</RCC>
