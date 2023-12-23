@@ -9,9 +9,10 @@ arch=('i686' 'x86_64')
 license=(GPL)
 url="https://github.com/calamares/calamares/releases"
 license=('LGPL')
-depends=('kdbusaddons' 'kconfig' 'kcoreaddons' 'kiconthemes' 'ki18n' 'kio' 'solid' 'yaml-cpp' 'kpmcore>=4.2.0' 'mkinitcpio-openswap'
-         'boost-libs' 'ckbcomp' 'hwinfo' 'qt5-svg' 'polkit-qt5' 'gtk-update-icon-cache' 'plasma-framework'
-         'qt5-xmlpatterns' 'squashfs-tools' 'libpwquality' 'efibootmgr' 'icu' 'appstream-qt')
+#'appstream-qt5' out as dependency and on iso
+depends=('kdbusaddons5' 'kconfig5' 'kcoreaddons5' 'kiconthemes5' 'ki18n5' 'kio5' 'solid5' 'yaml-cpp' 'kpmcore' 'mkinitcpio-openswap'
+         'boost-libs' 'ckbcomp' 'hwinfo' 'qt5-svg' 'polkit-qt5' 'gtk-update-icon-cache' 'plasma-framework5'
+         'qt5-xmlpatterns' 'squashfs-tools' 'libpwquality' 'efibootmgr' 'icu')
 conflicts=('arco-calamares' 'arco-calamares-comp' 'arco-calamares-dev')
 makedepends=('extra-cmake-modules' 'qt5-tools' 'qt5-translations' 'git' 'boost')
 backup=('usr/share/calamares/modules/bootloader.conf'
@@ -69,7 +70,7 @@ build() {
 	initramfscfg dracut dracutlukscfg \
 	dummyprocess dummypython dummycpp \
 	dummypythonqt services-openrc \
-	keyboardq localeq welcomeq"
+	keyboardq localeq welcomeq packagechooserq partitionq oemid license"
 	make
 }
 
