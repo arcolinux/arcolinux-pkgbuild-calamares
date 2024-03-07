@@ -1,12 +1,12 @@
 [Desktop Entry]
 Type=Application
 Version=1.0
-Name=Install ArcoLinux
-Comment=Installer for ArcoLinux
+Name=Install ArcoLinux Debug
+Comment=Installer for ArcoLinux debug
 GenericName=System Installer
 Keywords=calamares;system;installer;
-TryExec=/usr/bin/calamares_polkit %f
-Exec=/usr/bin/calamares_polkit %f
+TryExec=/usr/bin/calamares_polkit %f -d
+Exec=/usr/bin/calamares_polkit %f -d
 Icon=calamares
 Terminal=false
 Type=Application
