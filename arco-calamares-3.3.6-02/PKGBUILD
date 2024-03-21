@@ -1,7 +1,7 @@
 #https://github.com/calamares/calamares/releases
 #change prepare number too
 
-pkgname=arco-calamares-plasma
+pkgname=arco-calamares
 _pkgname=calamares
 pkgver=3.3.6
 pkgrel=02
@@ -40,9 +40,11 @@ depends=(
 	'yaml-cpp'
 )
 conflicts=(
-	'arco-calamares'
-	'arco-calamares-comp'
-	'arco-calamares-dev')
+	'arco-calamares-plasma'
+	'arco-calamares-next'
+	'arco-calamares-git'
+	'arco-calamares-wayland'
+)
 makedepends=(
 	'boost'
 	'cmake'
@@ -64,10 +66,10 @@ source=("calamares::https://github.com/erikdubois/calamares/archive/refs/tags/$p
 	"cal-arcolinux-debugging.desktop"
 	"calamares_polkit")
 
-sha256sums=('72089a695e64858156b9ef9bc9207079c5afc4f31752ff24456c4a2146261375'
-            'ad204bdf8fd967bc0397d22b6ee9e6249c76624fba1469d1ccffbb81ed763c79'
-            '54fc7e06fb3b143d29880011a604dc1b2b8d9ecedfcc4d25c045f3e46a3cce09'
-            'f782a476986095a0fdebee2e6ef695f56776d6d3386228835ce0511ee71b4e0c')
+sha256sums=('dd27344d3bd6e5a1e514b8cb297bf14d832dba45ae9f908aa622ad243ca57081'
+            'fd884147b0166e8115d8128282db8c2b00a93f81c17d8defd18e1fe01a377d1b'
+            '7c38fc1461307e4aff9b72922c6406789776a8252521618c5dcbe85beccb04f5'
+            '966c5f0834039dc6a7529e75f70417ba2510b1e643ffb49fd25855ce9dc244b4')
 
 prepare() {
 

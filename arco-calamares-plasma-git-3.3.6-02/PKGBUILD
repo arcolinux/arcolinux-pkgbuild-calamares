@@ -41,8 +41,10 @@ depends=(
 )
 conflicts=(
 	'arco-calamares'
-	'arco-calamares-comp'
-	'arco-calamares-dev')
+	'arco-calamares-next'
+	'arco-calamares-git'
+	'arco-calamares-wayland'
+)
 makedepends=(
 	'boost'
 	'cmake'

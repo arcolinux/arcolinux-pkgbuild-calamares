@@ -11,11 +11,51 @@ license=(GPL)
 url="https://github.com/calamares/calamares/releases"
 license=('LGPL')
 #'appstream-qt5' out as dependency and on iso
-depends=('kdbusaddons5' 'kconfig5' 'kcoreaddons5' 'kiconthemes5' 'ki18n5' 'kio5' 'solid5' 'yaml-cpp' 'kpmcore' 'mkinitcpio-openswap'
-         'boost-libs' 'ckbcomp' 'hwinfo' 'qt5-svg' 'polkit-qt5' 'gtk-update-icon-cache' 'plasma-framework5'
-         'qt5-xmlpatterns' 'squashfs-tools' 'libpwquality' 'efibootmgr' 'icu')
-conflicts=('arco-calamares' 'arco-calamares-comp' 'arco-calamares-dev')
-makedepends=('extra-cmake-modules' 'qt5-tools' 'qt5-translations' 'git' 'boost')
+provides=('calamares')
+depends=(
+	'boost-libs'
+	'ckbcomp'
+	'cryptsetup'
+	'doxygen'
+	'efibootmgr'
+	'gptfdisk'
+	'gtk-update-icon-cache'
+	'hwinfo'
+	'icu'
+	'kconfig'
+	'kcoreaddons'
+	'kcrash'
+	'ki18n'
+	'kparts'
+	'kpmcore'
+	'kservice'
+	'kwidgetsaddons'
+	'libpwquality'
+	'mkinitcpio-openswap'
+	'polkit-qt6'
+	'rsync'
+	'qt6-declarative'
+	'solid'
+	'squashfs-tools'
+	'yaml-cpp'
+)
+conflicts=(
+	'arco-calamares-plasma'
+	'arco-calamares-next'
+	'arco-calamares-git'
+	'arco-calamares-wayland'
+)
+makedepends=(
+	'boost'
+	'cmake'
+	'extra-cmake-modules'
+	'git'
+	'ninja'
+	'python-jsonschema'
+	'python-pyaml'
+	'python-unidecode'
+	'qt6-tools'
+)
 backup=('usr/share/calamares/modules/bootloader.conf'
         'usr/share/calamares/modules/displaymanager.conf'
         'usr/share/calamares/modules/initcpio.conf'
@@ -45,27 +85,43 @@ prepare() {
 build() {
 	cd $_pkgname-$pkgver-${pkgrel}
 
-	mkdir -p build
-	cd build
-	cmake .. \
-	-DCMAKE_BUILD_TYPE=Debug \
-	-DCMAKE_INSTALL_PREFIX=/usr \
-	-DCMAKE_INSTALL_LIBDIR=lib \
-	-DWITH_PYTHONQT=OFF \
-	-DWITH_KF5DBus=OFF \
-	-DBoost_NO_BOOST_CMAKE=ON \
-	-DWEBVIEW_FORCE_WEBKIT=OFF \
-	-DSKIP_MODULES="webview tracking interactiveterminal initramfs \
-	initramfscfg dracut dracutlukscfg \
-	dummyprocess dummypython dummycpp \
-	dummypythonqt services-openrc \
-	keyboardq localeq welcomeq packagechooserq partitionq oemid license"
-	make
+    cmake -S . -Bbuild \
+        -GNinja \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_INSTALL_LIBDIR=lib \
+        -DWITH_APPSTREAM=OFF \
+        -DWITH_PYBIND11=OFF \
+        -DWITH_QT6=ON \
+        -DSKIP_MODULES="dracut \
+            dracutlukscfg \
+            dummycpp \
+            dummyprocess \
+            dummypython \
+            dummypythonqt \
+            initramfs \
+            initramfscfg \
+            interactiveterminal \
+            keyboardq \
+            license \
+            localeq \
+            oemid \
+            packagechooserq \
+            partitionq \
+            services-openrc \
+            summaryq \
+            tracking \
+            usersq \
+            welcomeq \
+            zfs \
+            zfshostid"
+
+    cmake --build build
 }
 
 package() {
 	cd ${_pkgname}-${pkgver}-${pkgrel}/build
-	make DESTDIR="$pkgdir" install
+	DESTDIR="${pkgdir}" cmake --build . --target install
 	install -Dm644 "$srcdir/cal-arcolinux.desktop" "$pkgdir/usr/share/applications/cal-arcolinux.desktop"
 	install -Dm644 "$srcdir/cal-arcolinux-debugging.desktop" "$pkgdir/usr/share/applications/cal-arcolinux-debugging.desktop"
 	install -Dm755 "$srcdir/calamares_polkit" "$pkgdir/usr/bin/calamares_polkit"
