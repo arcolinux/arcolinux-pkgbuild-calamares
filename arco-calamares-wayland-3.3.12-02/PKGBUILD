@@ -1,0 +1,130 @@
+#https://github.com/calamares/calamares/releases
+#change prepare number too
+
+pkgname=arco-calamares-wayland
+_pkgname=calamares
+# change number in prepare as well
+pkgver=3.3.12
+pkgrel=02
+pkgdesc='Distribution-independent installer framework'
+arch=('i686' 'x86_64')
+license=(GPL)
+url="https://github.com/calamares/calamares/releases"
+license=('LGPL')
+#'appstream-qt5' out as dependency and on iso
+provides=('calamares')
+depends=(
+	'boost-libs'
+	'ckbcomp'
+	'cryptsetup'
+	'doxygen'
+	'efibootmgr'
+	'gptfdisk'
+	'gtk-update-icon-cache'
+	'icu'
+	'kconfig'
+	'kcoreaddons'
+	'kcrash'
+	'ki18n'
+	'kparts'
+	'kpmcore'
+	'kservice'
+	'kwidgetsaddons'
+	'libpwquality'
+	'mkinitcpio-openswap'
+	'polkit-qt6'
+	'rsync'
+	'qt6-declarative'
+	'solid'
+	'squashfs-tools'
+	'yaml-cpp'
+)
+conflicts=(
+	'arco-calamares'
+	'arco-calamares-next'
+)
+makedepends=(
+	'boost'
+	'cmake'
+	'extra-cmake-modules'
+	'git'
+	'ninja'
+	'python-jsonschema'
+	'python-pyaml'
+	'python-unidecode'
+	'qt6-tools'
+)
+backup=('usr/share/calamares/modules/bootloader.conf'
+        'usr/share/calamares/modules/displaymanager.conf'
+        'usr/share/calamares/modules/initcpio.conf'
+        'usr/share/calamares/modules/unpackfs.conf')
+
+source=("calamares::https://github.com/erikdubois/calamares/archive/refs/tags/$pkgver-$pkgrel.tar.gz"
+	"cal-arcolinux.desktop"
+	"cal-arcolinux-debugging.desktop"
+	"calamares_polkit")
+
+sha256sums=('41f6030db81e3d8c402ac44f60221dbe13fd055e38cf7ee34265b9aa3452f55a'
+            'ad204bdf8fd967bc0397d22b6ee9e6249c76624fba1469d1ccffbb81ed763c79'
+            '54fc7e06fb3b143d29880011a604dc1b2b8d9ecedfcc4d25c045f3e46a3cce09'
+            'cec894efaf4184ed282814a00d6e675d743c39a0a7dea756724fecbb24ca7eb3')
+
+prepare() {
+
+	cp -rv ../modules/* ${srcdir}/$_pkgname-${pkgver}-${pkgrel}/src/modules/
+
+	sed -i -e 's/"Install configuration files" OFF/"Install configuration files" ON/' "$srcdir/${_pkgname}-${pkgver}-${pkgrel}/CMakeLists.txt"
+	sed -i -e "s/desired_size = 512 \* 1024 \* 1024  \# 512MiB/desired_size = 512 \* 1024 \* 1024 \* 4  \# 2048MiB/" "$srcdir/${_pkgname}-${pkgver}-${pkgrel}/src/modules/fstab/main.py"
+
+	cd ${_pkgname}-${pkgver}-${pkgrel}
+	sed -i -e "s|CALAMARES_VERSION 3.3.11|CALAMARES_VERSION $pkgver-$pkgrel|g" CMakeLists.txt
+	#sed -i -e '/property real padding: 16;/d' "$srcdir/${_pkgname}-${pkgver}-${pkgrel}/src/qml/calamares-qt5/slideshow/Presentation.qml"
+	#sed -i -e '/property real padding: 16;/d' "$srcdir/${_pkgname}-${pkgver}-${pkgrel}/src/qml/calamares-qt6/slideshow/Presentation.qml"
+}
+
+build() {
+	cd $_pkgname-$pkgver-${pkgrel}
+
+    cmake -S . -Bbuild \
+        -GNinja \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_INSTALL_LIBDIR=lib \
+        -DWITH_APPSTREAM=OFF \
+        -DWITH_PYBIND11=OFF \
+        -DWITH_QT6=ON \
+        -DSKIP_MODULES="dracut \
+            dracutlukscfg \
+            dummycpp \
+            dummyprocess \
+            dummypython \
+            dummypythonqt \
+            initramfs \
+            initramfscfg \
+            interactiveterminal \
+            keyboardq \
+            license \
+            localeq \
+            oemid \
+            packagechooserq \
+            partitionq \
+            services-openrc \
+            services-systemd \
+            summaryq \
+            tracking \
+            usersq \
+            welcomeq \
+            zfs \
+            zfshostid"
+
+    cmake --build build
+}
+
+package() {
+	cd ${_pkgname}-${pkgver}-${pkgrel}/build
+	DESTDIR="${pkgdir}" cmake --build . --target install
+	install -Dm644 "$srcdir/cal-arcolinux.desktop" "$pkgdir/usr/share/applications/cal-arcolinux.desktop"
+	install -Dm644 "$srcdir/cal-arcolinux-debugging.desktop" "$pkgdir/usr/share/applications/cal-arcolinux-debugging.desktop"
+	install -Dm755 "$srcdir/calamares_polkit" "$pkgdir/usr/bin/calamares_polkit"
+	rm "$pkgdir/usr/share/applications/calamares.desktop"
+}
