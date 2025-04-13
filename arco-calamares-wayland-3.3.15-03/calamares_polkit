@@ -1,0 +1,2 @@
+#!/bin/bash
+sudo -E /usr/bin/calamares -d -platform xcb
